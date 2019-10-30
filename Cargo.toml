@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 serialport = "3.3.0"
+monman = { git = "https://github.com/maroider/monman" }

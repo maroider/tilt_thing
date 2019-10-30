@@ -1,3 +1,5 @@
+#![allow(clippy::unused_io_amount)]
+
 use std::io::{self, Write};
 
 use serialport::{SerialPortInfo, SerialPortType};
@@ -106,6 +108,9 @@ fn talk_to_tilt_thing(port: &SerialPortInfo) {
 
     println!("Connectino established");
 
+    let adapters = monman::DisplayAdapters::new().unwrap();
+    let adapter = adapters.nth(0).unwrap();
+
     loop {
         while port.bytes_to_read().unwrap() < 2 {
             std::thread::sleep(std::time::Duration::from_millis(100));
@@ -122,9 +127,9 @@ fn talk_to_tilt_thing(port: &SerialPortInfo) {
         };
 
         if tilted {
-            println!("tilted");
+            dbg!(adapter.set_orientation(monman::DisplayOrientation::Rotate90));
         } else {
-            println!("untilted");
+            dbg!(adapter.set_orientation(monman::DisplayOrientation::Default));
         }
     }
 }

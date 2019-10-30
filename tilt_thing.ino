@@ -9,7 +9,13 @@ const byte SC_CONN_ACC = 0x2;
 const byte SC_CONN_ACK = 0x3;
 const byte SC_TILT = 0x4;
 
+const byte CS_NOT_CONNECTED = 0x0;
+const byte CS_CONN_REQ_RECIEVED = 0x1;
+const byte CS_CONN_ACK_RECIEVED = 0x2;
+
 // BEGIN GLOBAL STATE
+
+byte conn_state = CS_NOT_CONNECTED;
 
 unsigned long previous_time = 0;
 byte prev_switch_state = 0;
@@ -22,22 +28,16 @@ void setup() {
     pinMode(LED_PIN, OUTPUT);
 
     Serial.begin(9600);
-    while (!Serial || Serial.available() != 1) {
-        async_blink(500);
+    while (!Serial) {
+        ;
     }
-    if (Serial.read() == SC_CONN_REQ) {
-        Serial.write(SC_CONN_ACC);
-        while (Serial.available() != 1) {
-            async_blink(250);
-        }
-        if (Serial.read() == SC_CONN_ACK) {
-            return;
-        }
-    }
-    err_blink();
 }
 
 void loop() {
+    if (conn_state != CS_CONN_ACK_RECIEVED) {
+        return;
+    }
+
     unsigned long current_time = millis();
     if (current_time - previous_time > POLL_INTERVAL) {
         previous_time = current_time;
@@ -47,6 +47,19 @@ void loop() {
             prev_switch_state = switch_state;
             Serial.write(SC_TILT);
             Serial.write(switch_state);
+        }
+    }
+}
+
+void serialEvent() {
+    if (conn_state == CS_NOT_CONNECTED || conn_state == CS_CONN_ACK_RECIEVED) {
+        if (Serial.read() == SC_CONN_REQ) {
+            Serial.write(SC_CONN_ACC);
+            conn_state = CS_CONN_REQ_RECIEVED;
+        }
+    } else if (conn_state == CS_CONN_REQ_RECIEVED) {
+        if (Serial.read() == SC_CONN_ACK) {
+            conn_state = CS_CONN_ACK_RECIEVED;
         }
     }
 }
