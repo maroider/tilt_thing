@@ -1,5 +1,4 @@
 const int SWITCH_PIN = 8;
-const int LED_PIN = 7;
 
 const long POLL_INTERVAL = 100;
 
@@ -25,7 +24,6 @@ byte prev_switch_state = 0;
 void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
     pinMode(SWITCH_PIN, INPUT);
-    pinMode(LED_PIN, OUTPUT);
 
     Serial.begin(9600);
     while (!Serial) {
