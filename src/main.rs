@@ -106,7 +106,7 @@ fn talk_to_tilt_thing(port: &SerialPortInfo) {
     port.write(&[SerialMessageType::ConnectionAcknowledged as u8])
         .unwrap();
 
-    println!("Connectino established");
+    println!("Connection established");
 
     let adapters = monman::DisplayAdapters::new().unwrap();
     let adapter = adapters.nth(0).unwrap();
