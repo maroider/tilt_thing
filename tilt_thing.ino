@@ -16,37 +16,30 @@ byte prev_switch_state = 0;
 
 // END GLOBAL STATE
 
-void setup()
-{
+void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
     pinMode(SWITCH_PIN, INPUT);
     pinMode(LED_PIN, OUTPUT);
 
     Serial.begin(9600);
-    while (!Serial || Serial.available() != 1)
-    {
+    while (!Serial || Serial.available() != 1) {
         async_blink(500);
     }
-    if (Serial.read() == SC_CONN_REQ)
-    {
+    if (Serial.read() == SC_CONN_REQ) {
         Serial.write(SC_CONN_ACC);
-        while (Serial.available() != 1)
-        {
+        while (Serial.available() != 1) {
             async_blink(250);
         }
-        if (Serial.read() == SC_CONN_ACK)
-        {
+        if (Serial.read() == SC_CONN_ACK) {
             return;
         }
     }
     err_blink();
 }
 
-void loop()
-{
+void loop() {
     unsigned long current_time = millis();
-    if (current_time - previous_time > POLL_INTERVAL)
-    {
+    if (current_time - previous_time > POLL_INTERVAL) {
         previous_time = current_time;
 
         byte switch_state = digitalRead(SWITCH_PIN);
@@ -58,11 +51,9 @@ void loop()
     }
 }
 
-void err_blink()
-{
+void err_blink() {
     bool on = false;
-    while (true)
-    {
+    while (true) {
         digitalWrite(LED_BUILTIN, on);
         delay(750);
         on = !on;
@@ -78,7 +69,7 @@ bool led_state = false;
 
 void async_blink(unsigned long duration) {
     unsigned long current_time = millis();
-    if (current_time - previous_blink > duration)  {
+    if (current_time - previous_blink > duration) {
         previous_blink = current_time;
         led_state = !led_state;
         digitalWrite(LED_BUILTIN, led_state);
